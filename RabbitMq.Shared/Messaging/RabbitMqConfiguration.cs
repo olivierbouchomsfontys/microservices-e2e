@@ -11,5 +11,9 @@
         public string Password { get; set; }
         
         public int Port { get; set; }
+        
+        public string ContentType { get; set; }
+        
+        public string Exchange { get; set; }
     }
 }

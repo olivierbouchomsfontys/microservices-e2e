@@ -13,11 +13,11 @@ namespace OrderService.Controllers
     public class OrderController : ControllerBase
     {
         private static readonly ICollection<Order> Orders = new List<Order>();
-        private readonly OrderMessagePublisher _messagePublisher;
+        private readonly OrderCreatedMessagePublisher _createdMessagePublisher;
 
         public OrderController(IOptions<RabbitMqConfiguration> rabbitMq)
         {
-            _messagePublisher = new OrderMessagePublisher(rabbitMq);
+            _createdMessagePublisher = new OrderCreatedMessagePublisher(rabbitMq);
         }
         
         [HttpGet("")]
@@ -39,7 +39,7 @@ namespace OrderService.Controllers
 
             Orders.Add(order);
             
-            _messagePublisher.Send(order);
+            _createdMessagePublisher.Send(order);
 
             return order;
         }

@@ -13,11 +13,14 @@ namespace CustomerService.Controllers
     public class CustomerController : ControllerBase
     {
         private static readonly ICollection<Customer> Customers = new List<Customer>();
-        private readonly CustomerMessagePublisher _messagePublisher;
+        
+        private readonly CustomerCreatedMessagePublisher _createdMessagePublisher;
+        private readonly CustomerDeletedMessagePublisher _deletedMessagePublisher;
         
         public CustomerController(IOptions<RabbitMqConfiguration> rabbitMq)
         {
-            _messagePublisher = new CustomerMessagePublisher(rabbitMq);
+            _createdMessagePublisher = new CustomerCreatedMessagePublisher(rabbitMq);
+            _deletedMessagePublisher = new CustomerDeletedMessagePublisher(rabbitMq);
         }
 
         [HttpGet("")]
@@ -39,7 +42,19 @@ namespace CustomerService.Controllers
 
             Customers.Add(customer);
             
-            _messagePublisher.Send(customer);
+            _createdMessagePublisher.Send(customer);
+
+            return customer;
+        }
+
+        [HttpDelete("")]
+        public ActionResult<Customer> Delete(int id)
+        {
+            Customer customer = Customers.FirstOrDefault(c => c.Id == id);
+            
+            Customers.Remove(customer);
+            
+            _deletedMessagePublisher.Send(customer);
 
             return customer;
         }
