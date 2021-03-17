@@ -1,4 +1,5 @@
-﻿namespace RabbitMq.Shared.Messaging
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+namespace RabbitMq.Shared.Messaging
 {
     public class RabbitMqConfiguration
     {

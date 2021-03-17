@@ -25,7 +25,7 @@ namespace OrderService.Messaging.Listener
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var consumer = new EventingBasicConsumer(Channel);
+            EventingBasicConsumer consumer = new EventingBasicConsumer(Channel);
 
             consumer.Received += HandleMessage;
 
@@ -36,11 +36,14 @@ namespace OrderService.Messaging.Listener
         
         protected override void HandleMessage(object sender, BasicDeliverEventArgs args)
         {
-            CustomerDeletedModel model = args.GetModel<CustomerDeletedModel>();
+            if (ShouldHandleMessage(args))
+            {
+                CustomerDeletedModel model = args.GetModel<CustomerDeletedModel>();
+
+                Channel.BasicAck(args.DeliveryTag, false);
+            }
             
             // TODO Handle
-            
-            Channel.BasicAck(args.DeliveryTag, false);
         }
 
     }

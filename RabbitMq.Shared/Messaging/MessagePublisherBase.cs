@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using RabbitMq.Shared.Messaging.Extensions;
 
 namespace RabbitMq.Shared.Messaging
 {
@@ -42,27 +42,18 @@ namespace RabbitMq.Shared.Messaging
         
         public void Send(object obj)
         {
-            using (var channel = Connection.CreateModel())
+            using (IModel channel = Connection.CreateModel())
             {
                 IBasicProperties message = channel.CreateBasicProperties();
 
                 message.ContentType = Configuration.ContentType;
                 message.DeliveryMode = DeliveryModePersistent;
-
-                message.Headers = GetHeaders(Subject); 
+                message.SetSubject(Subject);
 
                 byte[] body = JsonSerializer.SerializeToUtf8Bytes(obj);
-
-                channel.BasicPublish(Configuration.Exchange, Configuration.QueueName, body: body);
+                
+                channel.BasicPublish(Configuration.Exchange, Configuration.QueueName, message, body);
             }
-        }
-
-        private IDictionary<string, object> GetHeaders(string subject)
-        {
-            return new Dictionary<string, object>
-            {
-                ["MessageType"] = subject
-            };
         }
     }
 }

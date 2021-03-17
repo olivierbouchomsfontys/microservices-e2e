@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using System;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMq.Shared.Messaging.Extensions;
 
 namespace RabbitMq.Shared.Messaging
 {
@@ -41,9 +43,15 @@ namespace RabbitMq.Shared.Messaging
             Configuration = options.Value;
 
             Channel = Connection.CreateModel();
-            Channel.QueueDeclare(queue: Queue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+            Channel.QueueDeclare(Queue, true, false, false, null);
         }
 
         protected abstract void HandleMessage(object sender, BasicDeliverEventArgs args);
+
+        protected bool ShouldHandleMessage(BasicDeliverEventArgs args)
+        {
+            return args.GetSubject()?.Equals(Subject, StringComparison.OrdinalIgnoreCase)
+                ?? false;
+        }
     }
 }
