@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -7,7 +9,7 @@ using RabbitMq.Shared.Messaging.Extensions;
 
 namespace RabbitMq.Shared.Messaging
 {
-    public abstract class MessageListenerBase : BackgroundService
+    public abstract class MessageListenerBase<TModel> : BackgroundService where TModel : class
     {
         protected readonly RabbitMqConfiguration Configuration;
 
@@ -45,10 +47,35 @@ namespace RabbitMq.Shared.Messaging
             Channel = Connection.CreateModel();
             Channel.QueueDeclare(Queue, true, false, false, null);
         }
+        
+        protected abstract void HandleMessage(TModel model);
+        
+        protected sealed override Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        protected abstract void HandleMessage(object sender, BasicDeliverEventArgs args);
+            EventingBasicConsumer consumer = new(Channel);
 
-        protected bool ShouldHandleMessage(BasicDeliverEventArgs args)
+            consumer.Received += HandleMessage;
+
+            Channel.BasicConsume(Configuration.QueueName, false, consumer);
+
+            return Task.CompletedTask;
+        }
+
+        private void HandleMessage(object sender, BasicDeliverEventArgs args)
+        {
+            if (ShouldHandleMessage(args))
+            {
+                TModel model = args.GetModel<TModel>();
+                
+                HandleMessage(model);
+                
+                Channel.BasicAck(args.DeliveryTag, false);
+            }
+        }
+
+        private bool ShouldHandleMessage(BasicDeliverEventArgs args)
         {
             return args.GetSubject()?.Equals(Subject, StringComparison.OrdinalIgnoreCase)
                 ?? false;

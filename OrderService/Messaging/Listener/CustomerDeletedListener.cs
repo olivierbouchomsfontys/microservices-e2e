@@ -1,50 +1,28 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrderService.Messaging.Model;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using RabbitMq.Shared.Messaging;
-using RabbitMq.Shared.Messaging.Extensions;
 
 namespace OrderService.Messaging.Listener
 {
     /// <summary>
     /// Listener that executes when a customer is deleted.
     /// </summary>
-    public class CustomerDeletedListener : MessageListenerBase
+    public class CustomerDeletedListener : MessageListenerBase<CustomerDeletedModel>
     {
         protected override string Subject => "CustomerDeleted";
         protected override string Queue => "CustomerService";
+        
+        private readonly ILogger<CustomerDeletedListener> _logger;
 
-        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options) : base(options)
+        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, ILogger<CustomerDeletedListener> logger) : base(options)
         {
+            _logger = logger;
         }
         
-        protected override Task ExecuteAsync(CancellationToken cancellationToken)
+        protected override void HandleMessage(CustomerDeletedModel model)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            EventingBasicConsumer consumer = new EventingBasicConsumer(Channel);
-
-            consumer.Received += HandleMessage;
-
-            Channel.BasicConsume(Configuration.QueueName, false, consumer);
-
-            return Task.CompletedTask;
+            _logger.LogInformation("{Nameof} {Model}", nameof(HandleMessage), model);
         }
-        
-        protected override void HandleMessage(object sender, BasicDeliverEventArgs args)
-        {
-            if (ShouldHandleMessage(args))
-            {
-                CustomerDeletedModel model = args.GetModel<CustomerDeletedModel>();
-
-                Channel.BasicAck(args.DeliveryTag, false);
-            }
-            
-            // TODO Handle
-        }
-
     }
 }
