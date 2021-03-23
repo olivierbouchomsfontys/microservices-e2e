@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OrderService.Messaging.Listener;
+using RabbitMq.Shared.HealthCheck;
 using RabbitMq.Shared.Messaging;
 
 namespace OrderService
@@ -26,6 +27,8 @@ namespace OrderService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "OrderService", Version = "v1"});
             });
+
+            services.AddServiceHealthCheck();
             
             services.Configure<RabbitMqConfiguration>(options => Configuration.GetSection("RabbitMq").Bind(options));
             services.AddHostedService<CustomerDeletedListener>();
@@ -47,7 +50,11 @@ namespace OrderService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
+            });
         }
     }
 }

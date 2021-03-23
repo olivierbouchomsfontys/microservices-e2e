@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  broker:
+    image: "rabbitmq:3-management"
+    ports:
+      - "7100:15672"
+      - "7101:5672"
+    volumes:
+      - rabbitmq:/rabbitmq
+volumes:
+  rabbitmq:
+    driver: local

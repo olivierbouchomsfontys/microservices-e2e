@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using OrderService.Dto;
 using OrderService.Entities;
 using OrderService.Messaging;
 using RabbitMq.Shared.Messaging;
@@ -20,23 +21,41 @@ namespace OrderService.Controllers
             _createdMessagePublisher = new OrderCreatedMessagePublisher(rabbitMq);
         }
         
-        [HttpGet("")]
+        [HttpGet("{id}")]
         public ActionResult<Order> Get(int id)
         {
-            return Ok(Orders.First(c => c.Id == id));
-        }
+            Order order = Orders.FirstOrDefault(c => c.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
             
-        [HttpGet("GetAll")]
+            return Ok(order);
+        }
+
+        [HttpGet("")]
         public ActionResult<IEnumerable<Order>> GetAll()
         {
             return Ok(Orders);
         }
 
-        [HttpPost("")]
-        public ActionResult<Order> Create(Order order)
+        [HttpGet("Customer/{customerId}")]
+        public ActionResult<IEnumerable<Order>> GetForCustomer(int customerId)
         {
-            order.Id = Orders.Count;
+            return Ok(Orders.Where(c => c.CustomerId == customerId));
+        }
 
+        [HttpPost("")]
+        public ActionResult<Order> Create(CreateOrderInput input)
+        {
+            Order order = new()
+            {
+                Id = Orders.Count,
+                Created = input.Created,
+                CustomerId = input.CustomerId
+            };
+            
             Orders.Add(order);
             
             _createdMessagePublisher.Send(order);
