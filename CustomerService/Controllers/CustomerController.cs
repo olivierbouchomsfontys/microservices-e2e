@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CustomerService.Dto;
 using CustomerService.Entities;
 using CustomerService.Messaging;
@@ -44,29 +45,29 @@ namespace CustomerService.Controllers
         }
 
         [HttpPost("")]
-        public ActionResult<Customer> Create(CreateCustomerInput input)
+        public async Task<ActionResult<Customer>> Create(CreateCustomerInput input)
         {
             Customer customer = new ()
             {
                 Name = input.Name,
-                Id = Customers.Count
+                Id = Customers.Count + 1
             };
 
             Customers.Add(customer);
             
-            _createdMessagePublisher.Send(customer);
+            await _createdMessagePublisher.Send(customer);
 
             return customer;
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Customer> Delete(int id)
+        public async Task<ActionResult<Customer>> Delete(int id)
         {
             Customer customer = Customers.FirstOrDefault(c => c.Id == id);
             
             Customers.Remove(customer);
             
-            _deletedMessagePublisher.Send(customer);
+            await _deletedMessagePublisher.Send(customer);
 
             return customer;
         }

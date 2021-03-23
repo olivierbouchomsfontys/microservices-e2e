@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrderService.Dto;
@@ -47,7 +48,7 @@ namespace OrderService.Controllers
         }
 
         [HttpPost("")]
-        public ActionResult<Order> Create(CreateOrderInput input)
+        public async Task<ActionResult<Order>> Create(CreateOrderInput input)
         {
             Order order = new()
             {
@@ -58,7 +59,7 @@ namespace OrderService.Controllers
             
             Orders.Add(order);
             
-            _createdMessagePublisher.Send(order);
+            await _createdMessagePublisher.Send(order);
 
             return order;
         }

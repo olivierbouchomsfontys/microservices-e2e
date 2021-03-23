@@ -4,7 +4,7 @@ namespace OrderService.Dto
 {
     public class CreateOrderInput
     {
-        public int CustomerId { get; set; }
-        public DateTime Created { get; set; }
+        public int CustomerId { get; init; }
+        public DateTime Created { get; init; }
     }
 }

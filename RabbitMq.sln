@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMq.Core", "RabbitMq.Core\RabbitMq.Core.csproj", "{AC11D792-F303-4CDD-8637-FED3FB184B6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{0302A59B-E636-4B3D-9D4F-61C9E3219830}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerOrderService", "CustomerOrderService\CustomerOrderService.csproj", "{D5B92BD1-4F8D-4804-9FE9-6B121F8E15C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +26,9 @@ Global
 		{AC11D792-F303-4CDD-8637-FED3FB184B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC11D792-F303-4CDD-8637-FED3FB184B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC11D792-F303-4CDD-8637-FED3FB184B6C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0302A59B-E636-4B3D-9D4F-61C9E3219830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0302A59B-E636-4B3D-9D4F-61C9E3219830}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0302A59B-E636-4B3D-9D4F-61C9E3219830}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0302A59B-E636-4B3D-9D4F-61C9E3219830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5B92BD1-4F8D-4804-9FE9-6B121F8E15C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5B92BD1-4F8D-4804-9FE9-6B121F8E15C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5B92BD1-4F8D-4804-9FE9-6B121F8E15C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5B92BD1-4F8D-4804-9FE9-6B121F8E15C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

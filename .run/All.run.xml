@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All" type="CompoundRunConfigurationType">
-    <toRun name="CustomerService" type="LaunchSettings" />
-    <toRun name="OrderService" type="LaunchSettings" />
-    <toRun name="ApiGateway" type="LaunchSettings" />
-    <method v="2" />
-  </configuration>
-</component>

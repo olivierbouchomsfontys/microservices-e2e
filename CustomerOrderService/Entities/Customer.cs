@@ -1,8 +1,7 @@
-﻿namespace OrderService.Messaging.Model
+namespace CustomerOrderService.Entities
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global
-    // ReSharper disable ClassNeverInstantiated.Global
-    public record CustomerDeletedModel
+    public class Customer
     {
         public int Id { get; init; }
         public string Name { get; init; }

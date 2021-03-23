@@ -11,10 +11,9 @@ namespace RabbitMq.Shared.Messaging
 {
     public abstract class MessageListenerBase<TModel> : BackgroundService where TModel : class
     {
-        protected readonly RabbitMqConfiguration Configuration;
+        private readonly RabbitMqConfiguration _configuration;
 
         protected abstract string Subject { get; }
-        protected abstract string Queue { get; }
 
         private ConnectionFactory _connectionFactory;
         private ConnectionFactory ConnectionFactory
@@ -23,12 +22,12 @@ namespace RabbitMq.Shared.Messaging
             {
                 if (_connectionFactory == null)
                 {
-                    _connectionFactory = new ()
+                    _connectionFactory = new ConnectionFactory()
                     {
-                        HostName = Configuration.Hostname,
-                        Port = Configuration.Port,
-                        UserName = Configuration.UserName,
-                        Password = Configuration.Password
+                        HostName = _configuration.Hostname,
+                        Port = _configuration.Port,
+                        UserName = _configuration.UserName,
+                        Password = _configuration.Password
                     };
                 }
                 
@@ -38,14 +37,18 @@ namespace RabbitMq.Shared.Messaging
 
         private IConnection Connection => ConnectionFactory.CreateConnection();
 
-        protected IModel Channel { get; } 
+        private IModel Channel { get; } 
 
         protected MessageListenerBase(IOptions<RabbitMqConfiguration> options)
         {
-            Configuration = options.Value;
+            _configuration = options.Value;
 
             Channel = Connection.CreateModel();
-            Channel.QueueDeclare(Queue, true, false, false, null);
+            Channel.ExchangeDeclare(_configuration.Exchange, ExchangeType.Fanout);
+            
+            QueueDeclareOk result = Channel.QueueDeclare(string.Empty, exclusive: true);
+
+            Channel.QueueBind(result.QueueName, _configuration.Exchange, string.Empty);
         }
         
         protected abstract void HandleMessage(TModel model);
@@ -58,7 +61,7 @@ namespace RabbitMq.Shared.Messaging
 
             consumer.Received += HandleMessage;
 
-            Channel.BasicConsume(Configuration.QueueName, false, consumer);
+            Channel.BasicConsume(string.Empty, false, consumer);
 
             return Task.CompletedTask;
         }

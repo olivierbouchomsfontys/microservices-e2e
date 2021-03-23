@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMq.Shared.Messaging.Extensions;
@@ -7,10 +8,8 @@ namespace RabbitMq.Shared.Messaging
 {
     public abstract class MessagePublisherBase
     {
-        protected readonly RabbitMqConfiguration Configuration;
+        private readonly RabbitMqConfiguration _configuration;
 
-        private const int DeliveryModePersistent = 2;
-        
         protected abstract string Subject { get; }
 
         private ConnectionFactory _connectionFactory;
@@ -20,12 +19,12 @@ namespace RabbitMq.Shared.Messaging
             {
                 if (_connectionFactory == null)
                 {
-                    _connectionFactory = new ()
+                    _connectionFactory = new ConnectionFactory()
                     {
-                        HostName = Configuration.Hostname,
-                        Port = Configuration.Port,
-                        UserName = Configuration.UserName,
-                        Password = Configuration.Password
+                        HostName = _configuration.Hostname,
+                        Port = _configuration.Port,
+                        UserName = _configuration.UserName,
+                        Password = _configuration.Password
                     };
                 }
 
@@ -34,26 +33,35 @@ namespace RabbitMq.Shared.Messaging
         }
         
         private IConnection Connection => ConnectionFactory.CreateConnection();
+        
+        private IModel Channel { get; } 
 
         protected MessagePublisherBase(IOptions<RabbitMqConfiguration> options)
         {
-            Configuration = options.Value;
+            _configuration = options.Value;
+            
+            Channel = Connection.CreateModel();
+            Channel.ExchangeDeclare(_configuration.Exchange, ExchangeType.Fanout);
         }
         
-        public void Send(object obj)
+        public async Task Send(object obj)
         {
-            using (IModel channel = Connection.CreateModel())
+            IBasicProperties message = Channel.CreateBasicProperties();
+
+            message.ContentType = _configuration.ContentType;
+            message.SetSubject(Subject);
+
+            byte[] body = JsonSerializer.SerializeToUtf8Bytes(obj);
+
+            await DoSend(message, body);
+        }
+
+        private async Task DoSend(IBasicProperties message, byte[] body)
+        {
+            await Task.Run(() =>
             {
-                IBasicProperties message = channel.CreateBasicProperties();
-
-                message.ContentType = Configuration.ContentType;
-                message.DeliveryMode = DeliveryModePersistent;
-                message.SetSubject(Subject);
-
-                byte[] body = JsonSerializer.SerializeToUtf8Bytes(obj);
-                
-                channel.BasicPublish(Configuration.Exchange, Configuration.QueueName, message, body);
-            }
+                Channel.BasicPublish(_configuration.Exchange, string.Empty, message, body);
+            });
         }
     }
 }

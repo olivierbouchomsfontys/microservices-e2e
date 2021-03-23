@@ -11,7 +11,6 @@ namespace OrderService.Messaging.Listener
     public class CustomerDeletedListener : MessageListenerBase<CustomerDeletedModel>
     {
         protected override string Subject => "CustomerDeleted";
-        protected override string Queue => "CustomerService";
         
         private readonly ILogger<CustomerDeletedListener> _logger;
 
