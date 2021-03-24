@@ -1,6 +1,7 @@
 using System;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable ClassNeverInstantiated.Global
 namespace CustomerOrderService.Messaging.Model
 {
     public record OrderCreatedModel

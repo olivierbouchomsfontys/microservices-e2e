@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using OrderService.Messaging.Model;
+using OrderService.Repository;
 using RabbitMq.Shared.Messaging;
 
 namespace OrderService.Messaging.Listener
@@ -11,17 +11,17 @@ namespace OrderService.Messaging.Listener
     public class CustomerDeletedListener : MessageListenerBase<CustomerDeletedModel>
     {
         protected override string Subject => "CustomerDeleted";
-        
-        private readonly ILogger<CustomerDeletedListener> _logger;
 
-        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, ILogger<CustomerDeletedListener> logger) : base(options)
+        private readonly OrderRepository _repository;
+
+        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, OrderRepository repository) : base(options)
         {
-            _logger = logger;
+            _repository = repository;
         }
         
         protected override void HandleMessage(CustomerDeletedModel model)
         {
-            _logger.LogInformation("{Nameof} {Model}", nameof(HandleMessage), model);
+            _repository.DeleteForCustomer(model.Id);
         }
     }
 }

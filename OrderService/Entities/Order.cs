@@ -7,8 +7,13 @@ namespace OrderService.Entities
     public class Order
     {
         [Key]
-        public int Id { get; init; }
+        public int Id { get; set; }
         public DateTime Created { get; init; }
         public int CustomerId { get; init; }
+
+        public void AssignId(int id)
+        {
+            Id = id;
+        }
     }
 }

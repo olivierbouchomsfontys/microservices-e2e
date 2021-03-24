@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OrderService.Messaging.Listener;
+using OrderService.Repository;
 using RabbitMq.Shared.HealthCheck;
 using RabbitMq.Shared.Messaging;
 
@@ -32,6 +33,8 @@ namespace OrderService
             
             services.Configure<RabbitMqConfiguration>(options => Configuration.GetSection("RabbitMq").Bind(options));
             services.AddHostedService<CustomerDeletedListener>();
+
+            services.AddSingleton<OrderRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

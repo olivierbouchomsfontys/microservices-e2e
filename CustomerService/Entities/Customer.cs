@@ -6,7 +6,12 @@ namespace CustomerService.Entities
     public class Customer
     {
         [Key]
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; init; }
+
+        public void AssignId(int id)
+        {
+            Id = id;
+        }
     }
 }

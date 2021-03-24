@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CustomerService.Dto;
 using CustomerService.Entities;
 using CustomerService.Messaging;
+using CustomerService.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using RabbitMq.Shared.Messaging;
@@ -14,21 +14,22 @@ namespace CustomerService.Controllers
     [Route("[controller]")]
     public class CustomerController : ControllerBase
     {
-        private static readonly ICollection<Customer> Customers = new List<Customer>();
-        
         private readonly CustomerCreatedMessagePublisher _createdMessagePublisher;
         private readonly CustomerDeletedMessagePublisher _deletedMessagePublisher;
+
+        private readonly CustomerRepository _repository;
         
-        public CustomerController(IOptions<RabbitMqConfiguration> rabbitMq)
+        public CustomerController(IOptions<RabbitMqConfiguration> rabbitMq, CustomerRepository repository)
         {
             _createdMessagePublisher = new CustomerCreatedMessagePublisher(rabbitMq);
             _deletedMessagePublisher = new CustomerDeletedMessagePublisher(rabbitMq);
+            _repository = repository;
         }
 
         [HttpGet("{id}")]
         public ActionResult<Customer> Get(int id)
         {
-            Customer customer = Customers.FirstOrDefault(c => c.Id == id);
+            Customer customer = _repository.Get(id);
 
             if (customer == null)
             {
@@ -41,7 +42,7 @@ namespace CustomerService.Controllers
         [HttpGet("")]
         public ActionResult<IEnumerable<Customer>> GetAll()
         {
-            return Ok(Customers);
+            return Ok(_repository.GetAll());
         }
 
         [HttpPost("")]
@@ -49,12 +50,11 @@ namespace CustomerService.Controllers
         {
             Customer customer = new ()
             {
-                Name = input.Name,
-                Id = Customers.Count + 1
+                Name = input.Name
             };
-
-            Customers.Add(customer);
             
+            _repository.Create(customer);
+
             await _createdMessagePublisher.Send(customer);
 
             return customer;
@@ -63,9 +63,7 @@ namespace CustomerService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Customer>> Delete(int id)
         {
-            Customer customer = Customers.FirstOrDefault(c => c.Id == id);
-            
-            Customers.Remove(customer);
+            Customer customer = _repository.Get(id);
             
             await _deletedMessagePublisher.Send(customer);
 

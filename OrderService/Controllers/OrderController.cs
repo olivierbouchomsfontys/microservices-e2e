@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrderService.Dto;
 using OrderService.Entities;
 using OrderService.Messaging;
+using OrderService.Repository;
 using RabbitMq.Shared.Messaging;
 
 namespace OrderService.Controllers
@@ -14,18 +14,19 @@ namespace OrderService.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private static readonly ICollection<Order> Orders = new List<Order>();
         private readonly OrderCreatedMessagePublisher _createdMessagePublisher;
+        private readonly OrderRepository _repository;
 
-        public OrderController(IOptions<RabbitMqConfiguration> rabbitMq)
+        public OrderController(IOptions<RabbitMqConfiguration> rabbitMq, OrderRepository repository)
         {
             _createdMessagePublisher = new OrderCreatedMessagePublisher(rabbitMq);
+            _repository = repository;
         }
         
         [HttpGet("{id}")]
         public ActionResult<Order> Get(int id)
         {
-            Order order = Orders.FirstOrDefault(c => c.Id == id);
+            Order order = _repository.Get(id);
 
             if (order == null)
             {
@@ -38,13 +39,7 @@ namespace OrderService.Controllers
         [HttpGet("")]
         public ActionResult<IEnumerable<Order>> GetAll()
         {
-            return Ok(Orders);
-        }
-
-        [HttpGet("Customer/{customerId}")]
-        public ActionResult<IEnumerable<Order>> GetForCustomer(int customerId)
-        {
-            return Ok(Orders.Where(c => c.CustomerId == customerId));
+            return Ok(_repository.GetAll());
         }
 
         [HttpPost("")]
@@ -52,12 +47,11 @@ namespace OrderService.Controllers
         {
             Order order = new()
             {
-                Id = Orders.Count,
                 Created = input.Created,
                 CustomerId = input.CustomerId
             };
             
-            Orders.Add(order);
+            _repository.Create(order);
             
             await _createdMessagePublisher.Send(order);
 

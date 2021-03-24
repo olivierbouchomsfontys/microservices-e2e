@@ -6,7 +6,7 @@ using RabbitMq.Shared.Messaging.Extensions;
 
 namespace RabbitMq.Shared.Messaging
 {
-    public abstract class MessagePublisherBase
+    public abstract class MessagePublisherBase<TModel> where TModel : class
     {
         private readonly RabbitMqConfiguration _configuration;
 
@@ -19,7 +19,7 @@ namespace RabbitMq.Shared.Messaging
             {
                 if (_connectionFactory == null)
                 {
-                    _connectionFactory = new ConnectionFactory()
+                    _connectionFactory = new ()
                     {
                         HostName = _configuration.Hostname,
                         Port = _configuration.Port,
@@ -44,14 +44,14 @@ namespace RabbitMq.Shared.Messaging
             Channel.ExchangeDeclare(_configuration.Exchange, ExchangeType.Fanout);
         }
         
-        public async Task Send(object obj)
+        public async Task Send(TModel obj)
         {
             IBasicProperties message = Channel.CreateBasicProperties();
 
             message.ContentType = _configuration.ContentType;
             message.SetSubject(Subject);
 
-            byte[] body = JsonSerializer.SerializeToUtf8Bytes(obj);
+            byte[] body = JsonSerializer.SerializeToUtf8Bytes(obj, typeof(TModel));
 
             await DoSend(message, body);
         }

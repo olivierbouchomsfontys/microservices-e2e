@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
+using OrderService.Entities;
 using RabbitMq.Shared.Messaging;
 
 namespace OrderService.Messaging
 {
-    public class OrderCreatedMessagePublisher : MessagePublisherBase
+    public class OrderCreatedMessagePublisher : MessagePublisherBase<Order>
     {
         protected override string Subject => "OrderCreated";
 

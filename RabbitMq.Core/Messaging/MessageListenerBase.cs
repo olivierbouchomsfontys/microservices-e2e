@@ -22,7 +22,7 @@ namespace RabbitMq.Shared.Messaging
             {
                 if (_connectionFactory == null)
                 {
-                    _connectionFactory = new ConnectionFactory()
+                    _connectionFactory = new ()
                     {
                         HostName = _configuration.Hostname,
                         Port = _configuration.Port,

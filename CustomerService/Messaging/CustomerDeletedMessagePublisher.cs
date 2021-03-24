@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using CustomerService.Entities;
+using Microsoft.Extensions.Options;
 using RabbitMq.Shared.Messaging;
 
 namespace CustomerService.Messaging
 {
-    public class CustomerDeletedMessagePublisher : MessagePublisherBase
+    public class CustomerDeletedMessagePublisher : MessagePublisherBase<Customer>
     {
         protected override string Subject => "CustomerDeleted";
 
