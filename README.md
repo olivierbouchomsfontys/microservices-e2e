@@ -1,6 +1,6 @@
 # RabbitMQ
 
-Demo for a microservice architecture, using RabbitMQ and API Gateway pattern.
+Demo for a microservice architecture, using RabbitMQ and CQRS pattern.
 
 ## Prerequisites
 
