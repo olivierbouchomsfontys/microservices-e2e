@@ -1,0 +1,673 @@
+{
+	"info": {
+		"_postman_id": "ba0e5f7b-8c7a-450b-8c4d-4f2e6bb8e3b2",
+		"name": "Onderzoek teststrategie",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Customer Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        name: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer name is correct\", function () {\r",
+							"    const customer = pm.response.json();\r",
+							"    pm.expect(customer.name).to.eql('Olivier');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer id is set\", function () {\r",
+							"    const customer = pm.response.json();\r",
+							"    pm.expect(customer.id).to.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test('Schema is valid', function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(customer, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest('Customer GetAll');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\": \"Olivier\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5020/customer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer GetAll",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        name: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer name is correct\", function () {\r",
+							"    const customers = pm.response.json();\r",
+							"\r",
+							"    customers.forEach(customer => {\r",
+							"        pm.expect(customer.name).to.eql('Olivier');\r",
+							"    })\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer id is set\", function () {\r",
+							"    const customers = pm.response.json();\r",
+							"\r",
+							"    customers.forEach(customer => {\r",
+							"        pm.expect(customer.id).to.greaterThan(0);\r",
+							"    })\r",
+							"});\r",
+							"\r",
+							"pm.test('Schema is valid', function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(customer, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest('Customer Get');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5020/customer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        name: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer name is correct\", function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(customer.name).to.eql('Olivier');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer id is set\", function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(customer.id).to.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test('Schema is valid', function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(customer, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest('Customer Delete');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5020/customer/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"customer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        customerId: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        created: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer id is correct\", function () {\r",
+							"    const order = pm.response.json();\r",
+							"    pm.expect(order.customerId).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order id is set\", function () {\r",
+							"    const order = pm.response.json();\r",
+							"    pm.expect(order.id).to.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order date is correct\", () => {\r",
+							"    const order = pm.response.json();\r",
+							"    pm.expect(order.created).to.eql('2021-01-01T15:00:00');\r",
+							"})\r",
+							"\r",
+							"pm.test('Schema is valid', function () {\r",
+							"    const order = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(order, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"Order GetAll\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"customerId\": 1,\r\n    \"created\": \"2021-01-01T15:00:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5020/order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order GetAll",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        orderId: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        created: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order id is set\", () => {\r",
+							"    const orders = pm.response.json();\r",
+							"\r",
+							"    orders.forEach(order => {\r",
+							"        pm.expect(order.id).to.greaterThan(0);\r",
+							"    })\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order date is set\", () => {\r",
+							"    const orders = pm.response.json();\r",
+							"\r",
+							"    orders.forEach(order => {\r",
+							"        pm.expect(order.id).to.greaterThan(0);\r",
+							"    })\r",
+							"});\r",
+							"\r",
+							"pm.test('Schema is valid', () => {\r",
+							"    const order = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(order, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest('order Get');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5020/order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        customerId: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        created: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer id is correct\", () => {\r",
+							"    const order = pm.response.json();\r",
+							"    pm.expect(order.customerId).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order id is set\", () => {\r",
+							"    const order = pm.response.json();\r",
+							"    pm.expect(order.id).to.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order date is set\", () => {\r",
+							"    const order = pm.response.json();\r",
+							"    pm.expect(order.created).to.eql('2021-01-01T15:00:00')\r",
+							"})\r",
+							"\r",
+							"pm.test('Schema is valid', () => {\r",
+							"    const order = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(order, schema)).to.be.true;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5020/order/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"order",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CustomerOrder Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        order: {\r",
+							"            id: {\r",
+							"                type: \"number\"\r",
+							"            },\r",
+							"            customerId: {\r",
+							"                type: \"number\"\r",
+							"            },\r",
+							"            created: {\r",
+							"                type: \"string\"\r",
+							"            },\r",
+							"            customer: {\r",
+							"                id: {\r",
+							"                    type: \"number\"\r",
+							"                },\r",
+							"                name: {\r",
+							"                    type: \"string\"\r",
+							"                }\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer name is correct\", () => {\r",
+							"    const customer = pm.response.json().customer;\r",
+							"\r",
+							"    pm.expect(customer.name).to.eql('Olivier');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order id is set\", () => {\r",
+							"    const orders = pm.response.json().orders;\r",
+							"\r",
+							"    orders.forEach(order => {\r",
+							"        pm.expect(order.id).to.greaterThan(0);\r",
+							"    })\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order date is set\", () => {\r",
+							"    const orders = pm.response.json().orders;\r",
+							"\r",
+							"    orders.forEach(order => {\r",
+							"        pm.expect(order.id).to.greaterThan(0);\r",
+							"    })\r",
+							"});\r",
+							"\r",
+							"pm.test('Schema is valid', () => {\r",
+							"    const order = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(order, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5020/customerorder/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"customerorder",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"    properties: {\r",
+							"        id: {\r",
+							"            type: \"number\"\r",
+							"        },\r",
+							"        name: {\r",
+							"            type: \"string\"\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer name is correct\", function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(customer.name).to.eql('Olivier');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Customer id is set\", function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(customer.id).to.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test('Schema is valid', function () {\r",
+							"    const customer = pm.response.json();\r",
+							"\r",
+							"    pm.expect(tv4.validate(customer, schema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5020/customer/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"customer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CustomerOrder Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", () => {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5020/customerorder/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5020",
+					"path": [
+						"customerorder",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
