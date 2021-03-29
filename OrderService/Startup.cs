@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using OrderService.Messaging;
 using OrderService.Messaging.Listener;
 using OrderService.Repository;
+using RabbitMq.Shared.DependencyInjection.Extensions;
 using RabbitMq.Shared.HealthCheck;
 using RabbitMq.Shared.Messaging;
 
@@ -33,6 +35,8 @@ namespace OrderService
             
             services.Configure<RabbitMqConfiguration>(options => Configuration.GetSection("RabbitMq").Bind(options));
             services.AddHostedService<CustomerDeletedListener>();
+            
+            services.AddLazy<OrderCreatedMessagePublisher>();
 
             services.AddSingleton<OrderRepository>();
         }

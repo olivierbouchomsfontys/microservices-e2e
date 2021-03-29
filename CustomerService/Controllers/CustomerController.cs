@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CustomerService.Dto;
 using CustomerService.Entities;
 using CustomerService.Messaging;
 using CustomerService.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using RabbitMq.Shared.Messaging;
 
 namespace CustomerService.Controllers
 {
@@ -14,16 +13,16 @@ namespace CustomerService.Controllers
     [Route("[controller]")]
     public class CustomerController : ControllerBase
     {
-        private readonly CustomerCreatedMessagePublisher _createdMessagePublisher;
-        private readonly CustomerDeletedMessagePublisher _deletedMessagePublisher;
+        private readonly Lazy<CustomerCreatedMessagePublisher> _createdMessagePublisher;
+        private readonly Lazy<CustomerDeletedMessagePublisher> _deletedMessagePublisher;
 
         private readonly CustomerRepository _repository;
         
-        public CustomerController(IOptions<RabbitMqConfiguration> rabbitMq, CustomerRepository repository)
+        public CustomerController(CustomerRepository repository, Lazy<CustomerCreatedMessagePublisher> createdMessagePublisher, Lazy<CustomerDeletedMessagePublisher> deletedMessagePublisher)
         {
-            _createdMessagePublisher = new CustomerCreatedMessagePublisher(rabbitMq);
-            _deletedMessagePublisher = new CustomerDeletedMessagePublisher(rabbitMq);
             _repository = repository;
+            _createdMessagePublisher = createdMessagePublisher;
+            _deletedMessagePublisher = deletedMessagePublisher;
         }
 
         [HttpGet("{id}")]
@@ -55,7 +54,7 @@ namespace CustomerService.Controllers
             
             _repository.Create(customer);
 
-            await _createdMessagePublisher.Send(customer);
+            await _createdMessagePublisher.Value.Send(customer);
 
             return customer;
         }
@@ -67,7 +66,7 @@ namespace CustomerService.Controllers
 
             _repository.Delete(id);
             
-            await _deletedMessagePublisher.Send(customer);
+            await _deletedMessagePublisher.Value.Send(customer);
 
             return customer;
         }

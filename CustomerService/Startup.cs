@@ -1,3 +1,5 @@
+using System;
+using CustomerService.Messaging;
 using CustomerService.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using RabbitMq.Shared.DependencyInjection.Extensions;
 using RabbitMq.Shared.HealthCheck;
 using RabbitMq.Shared.Messaging;
 
@@ -33,6 +36,9 @@ namespace CustomerService
             services.Configure<RabbitMqConfiguration>(options => Configuration.GetSection("RabbitMq").Bind(options));
 
             services.AddSingleton<CustomerRepository>();
+
+            services.AddLazy<CustomerCreatedMessagePublisher>();
+            services.AddLazy<CustomerDeletedMessagePublisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

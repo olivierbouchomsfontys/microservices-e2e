@@ -14,5 +14,12 @@ namespace RabbitMq.Shared.Messaging
         public string ContentType { get; set; }
         
         public string Exchange { get; set; }
+
+        public int RetryCount { get; set; }
+
+        /// <summary>
+        /// Connection retry delay in seconds
+        /// </summary>
+        public double RetryDelayMs { get; set; }
     }
 }
