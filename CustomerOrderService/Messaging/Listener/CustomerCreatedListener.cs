@@ -1,6 +1,7 @@
 using CustomerOrderService.Entities;
 using CustomerOrderService.Messaging.Model;
 using CustomerOrderService.Repository;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMq.Shared.Messaging;
 
@@ -12,7 +13,7 @@ namespace CustomerOrderService.Messaging.Listener
 
         protected override string Subject => "CustomerCreated";
 
-        public CustomerCreatedListener(IOptions<RabbitMqConfiguration> options, CustomerRepository repository) : base(options)
+        public CustomerCreatedListener(IOptions<RabbitMqConfiguration> options, CustomerRepository repository, ILogger<CustomerCreatedListener> logger) : base(options, logger)
         {
             _repository = repository;
         }

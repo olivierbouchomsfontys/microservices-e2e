@@ -27,9 +27,9 @@ namespace OrderService.Repository
             }
         }
 
-        public void DeleteForCustomer(int id)
+        public void DeleteForCustomer(int customerId)
         {
-            _orders.RemoveAll(c => c.Id == id);
+            _orders.RemoveAll(c => c.CustomerId == customerId);
         }
     }
 }

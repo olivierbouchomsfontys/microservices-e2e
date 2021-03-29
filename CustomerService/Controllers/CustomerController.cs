@@ -64,6 +64,8 @@ namespace CustomerService.Controllers
         public async Task<ActionResult<Customer>> Delete(int id)
         {
             Customer customer = _repository.Get(id);
+
+            _repository.Delete(id);
             
             await _deletedMessagePublisher.Send(customer);
 

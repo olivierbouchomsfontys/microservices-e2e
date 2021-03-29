@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,6 +12,7 @@ namespace RabbitMq.Shared.Messaging
 {
     public abstract class MessageListenerBase<TModel> : BackgroundService where TModel : class
     {
+        private readonly ILogger<MessageListenerBase<TModel>> _logger;
         private readonly RabbitMqConfiguration _configuration;
 
         protected abstract string Subject { get; }
@@ -39,8 +41,9 @@ namespace RabbitMq.Shared.Messaging
 
         private IModel Channel { get; } 
 
-        protected MessageListenerBase(IOptions<RabbitMqConfiguration> options)
+        protected MessageListenerBase(IOptions<RabbitMqConfiguration> options, ILogger<MessageListenerBase<TModel>> logger)
         {
+            _logger = logger;
             _configuration = options.Value;
 
             Channel = Connection.CreateModel();
@@ -71,7 +74,9 @@ namespace RabbitMq.Shared.Messaging
             if (ShouldHandleMessage(args))
             {
                 TModel model = args.GetModel<TModel>();
-                
+             
+                _logger.LogInformation("Handling message with subject {GetSubject} and model {Model}", args.GetSubject(), model);
+
                 HandleMessage(model);
                 
                 Channel.BasicAck(args.DeliveryTag, false);
