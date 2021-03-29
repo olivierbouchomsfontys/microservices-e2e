@@ -5,8 +5,6 @@ services:
     ports:
       # Web interface
       - "7100:15672"
-      # Message broker interface disabled
-      # - "7101:5672"
     volumes:
       - rabbitmq:/rabbitmq
   gateway:
@@ -25,9 +23,6 @@ services:
     build: 
       dockerfile: "./CustomerService/Dockerfile"
       context: "."
-    # ports:
-      # - "5030:80"
-      # - "5031:443"
     environment: 
       - ASPNETCORE_ENVIRONMENT=ci
       - ASPNETCORE_URLS=https://+;http://+;
@@ -38,9 +33,6 @@ services:
     build: 
       dockerfile: "./OrderService/Dockerfile"
       context: "."
-    # ports:
-      # - "5030:80"
-      # - "5031:443"
     environment: 
       - ASPNETCORE_ENVIRONMENT=ci
       - ASPNETCORE_URLS=https://+;http://+;
@@ -51,9 +43,6 @@ services:
     build: 
       dockerfile: "./CustomerOrderService/Dockerfile"
       context: "."
-    # ports:
-      # - "5030:80"
-      # - "5031:443"
     environment: 
       - ASPNETCORE_ENVIRONMENT=ci
       - ASPNETCORE_URLS=https://+;http://+;
