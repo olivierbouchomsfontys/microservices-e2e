@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrderService.Messaging.Model;
 using OrderService.Repository;
 using RabbitMq.Shared.Messaging;
@@ -14,7 +15,7 @@ namespace OrderService.Messaging.Listener
 
         private readonly OrderRepository _repository;
 
-        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, OrderRepository repository) : base(options)
+        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, OrderRepository repository, ILogger<CustomerDeletedListener> logger) : base(options, logger)
         {
             _repository = repository;
         }

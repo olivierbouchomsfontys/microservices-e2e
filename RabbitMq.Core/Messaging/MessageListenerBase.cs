@@ -2,7 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMq.Shared.Messaging.Extensions;
@@ -11,6 +13,7 @@ namespace RabbitMq.Shared.Messaging
 {
     public abstract class MessageListenerBase<TModel> : BackgroundService where TModel : class
     {
+        private readonly ILogger<MessageListenerBase<TModel>> _logger;
         private readonly RabbitMqConfiguration _configuration;
 
         protected abstract string Subject { get; }
@@ -37,18 +40,14 @@ namespace RabbitMq.Shared.Messaging
 
         private IConnection Connection => ConnectionFactory.CreateConnection();
 
-        private IModel Channel { get; } 
+        private IModel _channel; 
 
-        protected MessageListenerBase(IOptions<RabbitMqConfiguration> options)
+        protected MessageListenerBase(IOptions<RabbitMqConfiguration> options, ILogger<MessageListenerBase<TModel>> logger)
         {
+            _logger = logger;
             _configuration = options.Value;
-
-            Channel = Connection.CreateModel();
-            Channel.ExchangeDeclare(_configuration.Exchange, ExchangeType.Fanout);
             
-            QueueDeclareOk result = Channel.QueueDeclare(string.Empty, exclusive: true);
-
-            Channel.QueueBind(result.QueueName, _configuration.Exchange, string.Empty);
+            Init();
         }
         
         protected abstract void HandleMessage(TModel model);
@@ -57,11 +56,11 @@ namespace RabbitMq.Shared.Messaging
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            EventingBasicConsumer consumer = new(Channel);
+            EventingBasicConsumer consumer = new(_channel);
 
             consumer.Received += HandleMessage;
 
-            Channel.BasicConsume(string.Empty, false, consumer);
+            _channel.BasicConsume(string.Empty, false, consumer);
 
             return Task.CompletedTask;
         }
@@ -71,13 +70,44 @@ namespace RabbitMq.Shared.Messaging
             if (ShouldHandleMessage(args))
             {
                 TModel model = args.GetModel<TModel>();
-                
+             
+                _logger.LogInformation("Handling message with subject {GetSubject} and model {Model}", args.GetSubject(), model);
+
                 HandleMessage(model);
                 
-                Channel.BasicAck(args.DeliveryTag, false);
+                _channel.BasicAck(args.DeliveryTag, false);
             }
         }
 
+        private void Init()
+        {
+            Policy
+                .Handle<Exception>()
+                .WaitAndRetry(_configuration.RetryCount, GetRetryDelay, OnInitRetry)
+                .Execute(DoInit);
+        }
+
+        private void OnInitRetry(Exception exception, TimeSpan timeSpan, int attempt, Context context)
+        {
+            _logger.LogWarning(exception, "An error occurred during initialization");
+            _logger.LogWarning("Retrying initialization, attempt nr. {Attempt} / {RetryCount}", attempt, _configuration.RetryCount);
+        }
+        
+        private TimeSpan GetRetryDelay(int attempt)
+        {
+            return TimeSpan.FromMilliseconds(attempt * _configuration.RetryDelayMs);
+        }
+
+        private void DoInit()
+        {
+            _channel = Connection.CreateModel();
+            _channel.ExchangeDeclare(_configuration.Exchange, ExchangeType.Fanout);
+            
+            QueueDeclareOk result = _channel.QueueDeclare(string.Empty, exclusive: true);
+
+            _channel.QueueBind(result.QueueName, _configuration.Exchange, string.Empty);
+        }
+        
         private bool ShouldHandleMessage(BasicDeliverEventArgs args)
         {
             return args.GetSubject()?.Equals(Subject, StringComparison.OrdinalIgnoreCase)

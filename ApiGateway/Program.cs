@@ -19,11 +19,11 @@ namespace ApiGateway
 
             return builder
                 .ConfigureServices(s => s.AddSingleton(builder))
-                .ConfigureAppConfiguration(config => config.AddJsonFile(Path.Combine("configuration", "ocelot.json")))
+                .ConfigureAppConfiguration((context, config) => config.AddJsonFile($"ocelot.{context.HostingEnvironment.EnvironmentName}.json"))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
         }
-        }
+    }
 }

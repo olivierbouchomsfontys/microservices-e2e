@@ -26,5 +26,10 @@ namespace CustomerService.Repository
                 _customers.Add(customer);
             }
         }
+
+        public void Delete(int id)
+        {
+            _customers.RemoveAll(c => c.Id == id);
+        }
     }
 }

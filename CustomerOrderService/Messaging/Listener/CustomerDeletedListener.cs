@@ -1,5 +1,6 @@
 using CustomerOrderService.Messaging.Model;
 using CustomerOrderService.Repository;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMq.Shared.Messaging;
 
@@ -11,7 +12,7 @@ namespace CustomerOrderService.Messaging.Listener
         
         protected override string Subject => "CustomerDeleted";
 
-        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, CustomerRepository repository) : base(options)
+        public CustomerDeletedListener(IOptions<RabbitMqConfiguration> options, CustomerRepository repository, ILogger<CustomerDeletedListener> logger) : base(options, logger)
         {
             _repository = repository;
         }

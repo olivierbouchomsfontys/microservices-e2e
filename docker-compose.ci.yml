@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  messagebroker:
+    image: "rabbitmq:3-management"
+    ports:
+      # Web interface
+      - "7100:15672"
+    volumes:
+      - rabbitmq:/rabbitmq
+  gateway:
+    image: "viem:gateway"
+    build: "ApiGateway/"
+    ports:
+      - "5020:80"
+      - "5021:443"
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=ci
+      - ASPNETCORE_URLS=https://+;http://+;
+  customerservice:
+    image: "viem:customerservice"
+    depends_on: 
+      - "messagebroker"
+    build: 
+      dockerfile: "./CustomerService/Dockerfile"
+      context: "."
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=ci
+      - ASPNETCORE_URLS=https://+;http://+;
+  orderservice:
+    image: "viem:orderservice"
+    depends_on: 
+      - "messagebroker"
+    build: 
+      dockerfile: "./OrderService/Dockerfile"
+      context: "."
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=ci
+      - ASPNETCORE_URLS=https://+;http://+;
+  customerorderservice:
+    image: "viem:customerorderservice"
+    depends_on: 
+      - "messagebroker"
+    build: 
+      dockerfile: "./CustomerOrderService/Dockerfile"
+      context: "."
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=ci
+      - ASPNETCORE_URLS=https://+;http://+;
+
+volumes:
+  rabbitmq:
+    driver: local

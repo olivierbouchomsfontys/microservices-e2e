@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -14,12 +15,12 @@ namespace OrderService.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly OrderCreatedMessagePublisher _createdMessagePublisher;
+        private readonly Lazy<OrderCreatedMessagePublisher> _createdMessagePublisher;
         private readonly OrderRepository _repository;
 
-        public OrderController(IOptions<RabbitMqConfiguration> rabbitMq, OrderRepository repository)
+        public OrderController(Lazy<OrderCreatedMessagePublisher> createdMessagePublisher, OrderRepository repository)
         {
-            _createdMessagePublisher = new OrderCreatedMessagePublisher(rabbitMq);
+            _createdMessagePublisher = createdMessagePublisher;
             _repository = repository;
         }
         
@@ -53,7 +54,7 @@ namespace OrderService.Controllers
             
             _repository.Create(order);
             
-            await _createdMessagePublisher.Send(order);
+            await _createdMessagePublisher.Value.Send(order);
 
             return order;
         }
