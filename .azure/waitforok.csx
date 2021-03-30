@@ -42,15 +42,15 @@ foreach (KeyValuePair<string, int> kvp in urls)
             {
                Console.Out.WriteLine($"{url} is ready, statuscode {response.StatusCode}");
             } else {
-                delay *= 1.5d;
+                delay *= 1.33d;
                 Console.Out.WriteLine($"{url} is not ready, statuscode {response.StatusCode}, waiting {delay}ms");
                 await Task.Delay(TimeSpan.FromMilliseconds(delay));
             }
         } catch (Exception e) {
             success = false;
             
-            delay *= 1.5d;
-            Console.Out.WriteLine($"{url} is not ready, message {e.Message}, waiting {delay}ms");
+            delay *= 1.33d;
+            Console.Out.WriteLine($"{url} is not ready, message: \"{e.Message}\", waiting {delay}ms");
             await Task.Delay(TimeSpan.FromMilliseconds(delay));
         }
     }
