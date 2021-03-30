@@ -37,16 +37,20 @@ foreach (KeyValuePair<string, int> kvp in urls)
             var response = await client.GetAsync(url);
             
             success = response.IsSuccessStatusCode;
-        } catch {
+            
+            if (success) 
+            {
+               Console.Out.WriteLine($"{url} is ready, statuscode {response.StatusCode}");
+            } else {
+                delay *= 1.5d;
+                Console.Out.WriteLine($"{url} is not ready, statuscode {response.StatusCode}, waiting {delay}ms");
+                await Task.Delay(TimeSpan.FromMilliseconds(delay));
+            }
+        } catch (Exception e) {
             success = false;
-        }
-        
-        if (success) 
-        {
-           Console.Out.WriteLine($"{url} is ready, statuscode {response.StatusCode}");
-        } else {
+            
             delay *= 1.5d;
-            Console.Out.WriteLine($"{url} is not ready, statuscode {response.StatusCode}, waiting {delay}ms");
+            Console.Out.WriteLine($"{url} is not ready, message {e.Message}, waiting {delay}ms");
             await Task.Delay(TimeSpan.FromMilliseconds(delay));
         }
     }
