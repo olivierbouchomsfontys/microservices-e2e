@@ -9,7 +9,7 @@ services:
       - rabbitmq:/rabbitmq
   gateway:
     image: "viem:gateway"
-    build: "ApiGateWay/"
+    build: "ApiGateway/"
     ports:
       - "5020:80"
       - "5021:443"
