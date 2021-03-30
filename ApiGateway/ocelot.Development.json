@@ -49,7 +49,7 @@
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/order/customer/{id}",
+      "DownstreamPathTemplate": "/customerorder/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

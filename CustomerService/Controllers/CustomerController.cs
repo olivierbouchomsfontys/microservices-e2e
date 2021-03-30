@@ -6,6 +6,8 @@ using CustomerService.Entities;
 using CustomerService.Messaging;
 using CustomerService.Repository;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMq.Shared.Rest.Errors;
+using RabbitMq.Shared.Rest.Errors.Action;
 
 namespace CustomerService.Controllers
 {
@@ -32,12 +34,12 @@ namespace CustomerService.Controllers
 
             if (customer == null)
             {
-                return NotFound();
+                return NotFound(NotFoundResponse.Create<Customer>(id));
             }
             
             return Ok(customer);
         }
-            
+        
         [HttpGet("")]
         public ActionResult<IEnumerable<Customer>> GetAll()
         {
@@ -63,6 +65,11 @@ namespace CustomerService.Controllers
         public async Task<ActionResult<Customer>> Delete(int id)
         {
             Customer customer = _repository.Get(id);
+
+            if (customer == null)
+            {
+                return NotFound(NotFoundResponse.Create<Customer>(id, CrudAction.Delete));
+            }
 
             _repository.Delete(id);
             
