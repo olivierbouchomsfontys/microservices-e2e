@@ -1,16 +1,8 @@
 using System;
 using System.Net.Http;
-// using System.Timers;
 using System.Collections.Generic;
 
-// int timeOut = 60;
 int delayBase = 128;
-
-// Timer timer = new Timer(timeOut * 1000);
-// timer.Elapsed += (s, args) => {
-//     Console.Error.WriteLine($"Timeout ({timeOut} seconds) expired, exiting");
-//     Environment.Exit(1);
-// };
 
 HttpClient client = new HttpClient();
 
@@ -32,10 +24,6 @@ foreach (string url in Args)
     Console.Out.WriteLine($"Adding url {url} to urls to poll");
     urls.Add(url, 0);
 }
-
-// Console.Out.WriteLine($"Timeout: {timeOut} seconds");
-
-// timer.Start();
 
 foreach (KeyValuePair<string, int> kvp in urls) 
 {
