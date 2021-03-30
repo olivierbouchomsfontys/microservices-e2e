@@ -33,11 +33,15 @@ foreach (KeyValuePair<string, int> kvp in urls)
     double delay = delayBase;
 
     while (!success) {
-        var response = await client.GetAsync(url);
+        try {
+            var response = await client.GetAsync(url);
+            
+            success = response.IsSuccessStatusCode;
+        } catch {
+            success = false;
+        }
         
-        success = response.IsSuccessStatusCode;
-        
-        if (response.IsSuccessStatusCode) 
+        if (success) 
         {
            Console.Out.WriteLine($"{url} is ready, statuscode {response.StatusCode}");
         } else {
