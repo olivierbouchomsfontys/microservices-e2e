@@ -1,4 +1,3 @@
-using System;
 using CustomerService.Messaging;
 using CustomerService.Repository;
 using Microsoft.AspNetCore.Builder;

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using OrderService.Dto;
 using OrderService.Entities;
 using OrderService.Messaging;
 using OrderService.Repository;
-using RabbitMq.Shared.Messaging;
+using RabbitMq.Shared.Rest.Errors;
 
 namespace OrderService.Controllers
 {
@@ -31,7 +30,7 @@ namespace OrderService.Controllers
 
             if (order == null)
             {
-                return NotFound();
+                return NotFound(NotFoundResponse.Create<Order>(id));
             }
             
             return Ok(order);

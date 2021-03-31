@@ -1,1 +1,1 @@
-docker-compose -f docker-compose.ci.yml up -d --build --force-recreate
+docker-compose -f docker-compose.ci.yml up -d --force-recreate

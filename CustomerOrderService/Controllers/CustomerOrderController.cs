@@ -3,6 +3,7 @@ using CustomerOrderService.Dto;
 using CustomerOrderService.Entities;
 using CustomerOrderService.Repository;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMq.Shared.Rest.Errors;
 
 namespace CustomerOrderService.Controllers
 {
@@ -26,7 +27,7 @@ namespace CustomerOrderService.Controllers
 
             if (customer == null)
             {
-                return NotFound();
+                return NotFound(NotFoundResponse.Create<Customer>(customerId));
             }
 
             IEnumerable<Order> orders = _orderRepository.GetForCustomer(customerId);
