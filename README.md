@@ -1,6 +1,6 @@
 # RabbitMQ
 
-Demo for a microservice architecture, using RabbitMQ and CQRS pattern.
+Demo for a microservice architecture, using RabbitMQ, API gateway and CQRS pattern.
 
 ## Prerequisites
 
@@ -9,10 +9,6 @@ Demo for a microservice architecture, using RabbitMQ and CQRS pattern.
 
 ## How to run
 
-### RabbitMQ
+### Docker
 
-* Run `docker-compose up -d` to launch RabbitMQ.
-
-### API
-
-* Run all projects. In Rider it can be launched by the compound `CQRS`
+* Run `docker-compose -f docker-compose.dev.yml up -d` to launch RabbitMQ and all services. API gateway is available at localhost:5020
